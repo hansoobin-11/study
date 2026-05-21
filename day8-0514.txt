@@ -1,0 +1,114 @@
+가상 호스팅(Virtual Hosting) : 하나의 IP로 여러 도메인을 운영하는 것
+ 
+ - 호스팅 : IT 시스템을 운영할 수 있도록 환경(H/W, N/W, SW/W)을 구축해서 서비스를 하는 것
+  - 항온항습, 정전 대비 충전(UPS) 장치 구비
+  - 회사에서 직접 구축하는 경우
+  - 호스팅 대행 서비스 회사의 데이터 센터에 입주(공간(상면) 임대 + 네트워크 관제 + 보안)
+ 
+ - 웹 서비스 시작
+  - 인프라 서비스 호스팅
+  - 웹 서비스용 App 개발
+  - 서버 프로그램 H/W 설치
+  - 서비스용 공인 IP + 도메인 신청
+  - DNS에 공인 IP + 공인 도메인 등록 
+ 
+  * 요즘은 주로 클라우드 서비스를 사용한다
+  
+  * 개발 및 테스트 단계에서는 PC내의 host 파일에 IP와 가상 도메인을 등록해서 사용
+
+------------------------------------
+ 
+가상 호스트 설정 (교재 117/338)
+ - PC내의 host 파일에 PC IP와 가상 도메인을 등록해서 사용하는 방법
+
+ 1. 메모장을 관리자 권한으로 실행
+ 2. C:\Windows\system32\drivers\etc\hosts 열기
+ 3. hosts 파일에 가상 도메인 설정 및 conf / httpd-vhosts.conf 파일 수정
+ 4. 톰캣 server.xml에 webapps 디렉토리 설정
+ 5. 주소 3은 프록시 설정 (교재 113/338)
+ 6. 웹서버 + WAS 재시작
+
+------------------------------------
+로드 밸런싱(Load Balancing) : 서버의 트래픽을 분산 처리
+
+ - 로드 밸런싱 설정 (교재 122/338)
+  0. www.lb.com 도메인을 hosts 파일에 등록
+  1. tomcat 폴더내에 lb01, lb02 폴더 생성
+  2. 각각의 lb01, lb02 폴더내에 
+    - conf와 lib는 원래 있던 거 복사
+    - bin 등등은 새로 생성
+  3. 각각의 lb01, lb02 폴더내의 bin 폴더에 startup/shutdown 시키는 명령어 batch 생성
+  4. 각각의 lb01, lb02 폴더내의 conf 폴더에 있는 server.xml을 편집
+  5. lb01, lb02 인스턴스의 각각의 문서 폴더에 webapps 내에 있는 WEB-INF 폴더를 복사 
+  ※ servlet 프로젝트 구조
+    프로젝트 폴더 --
+
+                       | - web.xml
+                       | - WEB-INF
+                            - src
+                            - classes
+                            - lib
+  6. lb01, lb02 인스턴스의 각각의 문서 폴더에 있는 web.xml 파일내에 <distributable/> 추가 (* </webapp> 보다 위에)
+
+  7. 웹서버쪽 설정
+   - workers.properties 수정
+     - worker.lb01.lbfactor=1 : 각각 lb요소에게 동일한 트래픽을 배분(Round Robin)
+   - vhosts 설정에 파일에 www.lb.com 서비스 내용 추가
+   - c:/webroot_lb01, 02 --> 웹서버가 알아서 인식한다.
+  8. 서버 재시작
+
+ - 세션 클러스터링 : 로드 밸런싱에서 세션 복사(Session Replication)를 통해 각 instance 간에 동일한 세션을 유지하는 것
+   1. 스티키 세션(Sticky Session) : 처음 세션이 만들어진 서버로만 접속
+   2. Session을 별도의 DB(Redis)에 저장
+   3. Session을 없애고 stateless 상태로 인증(JWT : JSON Web Token)
+
+------------------------------------
+
+SSL/TLS
+ - 보안/암호화 통신을 위해 HTTPS가 필요
+   - SSL : HTTPS 서비스를 운영하기 위한 기술
+   - TSL : SSL 3.0 을 국제표준화 기구에서 새로 정립한 것(통상적으로 SSL과 TLS는 같은 의미로 사용)
+     - 대칭키/비대칭키 방식 혼용
+     - 서버 인증(Server Authentication)
+     - 클라이언트 인증(Client Authentication)
+     - 데이터 암호화(Data Encryption)
+
+------------------------------------
+
+ * CA(Certificated Agency) 에서 디지털 인증서를 발급받으면 웹 서비스 시 TLS/SSL로 암호화된 서비스 제공 가능
+  
+  1. OpenSSL 다운로드
+  2. OPENSSL_CONF 환경변수 생성 - openssl.cnf 경로 등록
+  3. bin 폴더의 openssl.exe 실행(cmd로)
+  4. 개인키, 디지털 인증 요청서, 디지털 인증서 생성
+    - 암호 없는 개인키 생성 : openssl genrsa -out private.key 2048
+    - 인증 발급 요청서(CSR : Certificate Signing Request) 생성 
+       : openssl req -new -key private.key(개인키) -out private.csr(발급 받을 CSR)  
+
+
+TLS/SSL 생성법
+1. httpd.conf에서 아래 모듈 활성화
+   LoadModule ssl_module modules/mod_ssl.so 
+   LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
+2. httpd.conf에서 Include conf/extra/httpd-ssl.conf 사용 활성
+- DocumentRoot "c:/webroot" --> 수정
+- ServerName 127.0.0.1:443 --> 수정
+- JkMount /* study --> 추가
+- SSLCertificateFile 인증서 경로
+- SSLCertificateKeyFile 개인키 경로
+
+------------------------------------
+Spring Framework(신규 서비스 생성 중단)
+   - MVC 패턴(Model View Controller)
+   - 디스패처 서블릿(Dispatcher Servlet)
+   - JDK 11까지 지원
+   - Tomcat 9까지 지원
+   * Maven Project 이용해서 프로젝트 생성(교재 281/338 참고) 
+   * 배포 시 war 파일로
+
+   * Maven 빌드 오류 : pom.xml 수정 + maven install + maven update
+   
+   * 프로젝트 생성 오류
+     new maven project -> add archetype
+     group id : org.apache.maven.archetypes / artifact id : maven-archetypes-webapp/ version : 1.5
+   * web.xml 설정에 contextparam 추가

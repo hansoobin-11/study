@@ -1,0 +1,112 @@
+HTML을 관리하기 위한 클라이언트 <---> 서버간의 약속(Protocol)
+
+: HTTP (Hyper text Transfer Protocol)
+
+ 1. 비연결성(Connectionless)
+ 2. 무상태(Stateless)
+
+---------------
+
+MIME(Multipurpose Internet Mail Extensions) : 이메일의 첨부파일을 처리하기 위한 규칙
+
+---------------
+
+HTTP에서 사용하는 명령 : HTTP 메소드
+- GET
+- POST
+- PUT
+- PATCH
+- DELETE
+
+---------------
+
+Content-Type : MIME 유형
+ 
+ - Application 
+  - application/octet-stream
+  - application/json
+  - application/x-www-form-urlencoded : HTML Form 형태로 데이터 전송
+ 
+ - Text
+  - text/css
+  - text/html
+  - text/csv
+  - text/plain
+
+ - File
+  - application/msword
+  - application/pdf
+  - application/zip
+  - image/jpeg
+
+ - Multipart(multipart-formdata) : 파일 첨부
+
+---------------
+
+웹서버(HTTP Server)
+ - 클라이언트가 요청한 정적인 컨텐츠(Static Content)를 HTTP Protocol을 통해 처리하는 서버
+   - URL(Uniform Resource Locator) : 웹에서 접근 가능한 자원의 주소를 표현하는 표준 방식
+     - 정적 컨텐츠(HTML, Image...) 는 상대경로 / 동적 컨텐츠는 쿼리 스트링을 통해 서버에 전달 
+   - URI(Uniform Resource Identifier / 통합 자원 식별자) : URL은 URI에 위치 개념을 추가한 것으로 URI가 더 포괄적 개념
+- ex) Apache HTTP Server, NGINX, Microsoft IIS(Internet Information Server)
+---------------
+
+WAS(Web Application Service) 
+ - 웹서버로부터 오는 동적인(Dynamic) 요청을 처리하는 서버
+   - 동적인 데이터들을 처리하여 정적인 페이지를 생성해주는 소프트웨어 모듈인 웹 컨테이너(Web Container)를 포함
+   - CGI(Common Gateway Interface)의 한계(프로그램 제어, 프로세스 문제 등)
+   - 미들웨어(Middleware) 개념을 도입하여 Through Pass를 통해 별도의 서버로 업무를 이관하고, 그 서버에서 동적 요청을 처리
+   - 웹서버와 여동하여 여러대의 WAS 운영을 통해 Load Balancing을 구현
+     - 부하 분산 처리
+     - 장애 발생 시 서비스 중단 없이 장애를 유발하는 WAS 제거 또는 교체 가능하므로 무중단 서비스 운영 가능
+   - ex) 오픈소스 WAS : Apache Tomcat, WildFly / 상용 WAS : JBoss-EAP, Oracle WEBLOGIC, JEUS
+
+---------------
+
+프록시 서버(Proxy Server)
+ - Proxy : 서버와 클라이언트 사이에서 대리로 통신을 수행하는 것
+ - Proxy Server : 프록시 기능을 하는 서버
+
+ - 역할
+   - 캐시 데이터 사용
+   - 보안
+   - 접속 우회
+
+ - 유형
+   - 포워드 프록시(Forward Proxy)
+   - 리버스 프록시(Reverse Proxy)
+ 
+---------------
+
+Apache HTTP Server 설치
+ 1. 다운로드 후 /conf/httpd.conf 수정
+ 2. 관리자 권한으로 cmd 실행 후 C:\Apache24\bin 으로 이동
+ 3. $httpd -k install - 윈도우 서비스로 등록
+ 4. 서비스 시작 : httpd -k restart(Apache HTTP Server가 시작) / 서비스 종료 : httpd -k stop / 버전 확인 : httpd -version
+ 5. 서비스 운영 중 httpd.conf 변경 시 웹서버 재시작
+ * 서비스 : GUI 가 없는 프로그램을 백그라운드 서비스(서버용 프로그램)
+
+
+클라이언트(웹 브라우저) -> 동적 요청 -> 웹서버 -> WAS(내부 웹서버 <-> 웹 컨테이너)
+
+SSR(Server Side Rendering)
+
+Tomcat 다운로드 시 주의 사항
+1. 버전 확인 필요
+- tomcat 9 의 서블릿 관련 외부 라이브러리 : javax (스프링 레거시 프로젝트)
+- tomcat 10 의 서블릿 관련 외부 라이브러리 : jakarta (스프링 부트)
+
+2. 환경 변수 등록
+
+Servlet(서블릿) : 웹 애플리케이션용으로 개발된 자바 애플리케이션
+JSP(Java Server Page) : 서블릿을 스크립트 언어 수준으로 쉽게 만든 프로그램
+
+3-Tier 구조
+
+---------------
+
+Web Server - WAS 연동
+
+교재(112/338)
+1. mod_jk 모듈 방식(Apache HTTP Server와 Apache Tomcat WAS 와의 연동)
+2. mod_proxy와 mod_proxy_http 모듈을 활성화

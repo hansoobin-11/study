@@ -1,0 +1,163 @@
+Monolith / Microservice
+
+--------------
+
+* 스프링 레거시 프로젝트 강제 생성 방법
+
+ - http-content.xml 파일을 구해서 org.springsource.eclipse.commoms.content.core 에 다운로드
+ - maven 자바 프로젝트 + 스프링 라이브러리 + 조합 -> 프로젝트 생성 
+
+
+--------------
+
+ 디스패처 서블릿(Dispatcher Servlet)
+  - Spring MVC에서 클라이언트의 모든 요청을 가장 먼저 받아 적합한 컨트롤러로 위임하는 프론트 컨트롤러
+
+--------------
+
+스프링 처리 Flow
+
+- controller(스프링 빈)에서 서비스 호출
+- 서비스 구현체(클래서, 스트링 빈)에서 Dao 객체 호출
+- Dao 객체는 Mapper.XML에서 정의한 SQL을 실행해서 필요한 데이터를 가져옴
+controller는 가져온 데이터를 Model, ModelAndView 객체로 호출 -> ResolveView를 통해 JSP에서 JSTL 문법을 통해 화면을 구성
+
+* POJO(Plain Old Java Object) : 스프링에서 이용하는 자바
+
+--------------
+
+스프링 주요 문법
+
+- 의존성 주입(Dependency Injection)
+  1. 생성자 주입(Constructor Injection) * 권장 방식
+  2. 수정자 주입(Setter Injection)
+  3. 필드 주입(Field Injection) - 어노테이션 사용
+  4. 일반 메서드 주입(Method Injection) - 수정자 주입과 비슷
+
+* 의존성 주입 하지 않고 내부 객체에 new 키워드 사용해서 다른 클래스에 있는 객체 사용하는 경우와 의존성 주입의 차이
+
+- 영속성(Persistence)
+  - 데이터를 생성한 프로그램이 종료되더라도 사라지지 않는 데이터의 특성
+  - 영속성을 갖는 객체 생성 : JDBC, Spring JDBC / Persistence Framework : SQL Mapper(MyBatis...), ORM(Hibernate...)
+
+  * ORM(Object Relational Mapping/객체-관계 매핑) : 데이터베이스의 데이터를 클래스와 자동으로 연결(매핑) 해주는 것
+
+--------------
+
+ MySQL에서의 페이지 계산 SQL 문법
+
+```sql
+<!-- 게시물 목록 보기 -->
+<select id="list" parameterType="HashMap" resultType="com.board.dto.BoardDTO">
+	select @seq:=@seq+1 as seq,seqno,userid,writer,title,regdate,hitno from (select @seq:=0) a,tbl_board b 
+		where writer like concat('%',#{keyword},'%') or title like concat('%',#{keyword},'%')
+			or content like concat('%',#{keyword},'%') order by seq desc 
+				limit #{startPoint}, #{postNum}
+</select>
+```
+
+- (select @seq:=0) a - @seq 라는 변수를 선언하고 0으로 초기화한 후, a라는 별칭의 테이블로 aliasing
+
+cf. 오라클과의 차이 비교
+
+  select sysdate from dual; -Oracle
+  select @now; -MySQL
+
+  writer like concat('%',#{keyword},'%') === writer like %'날씨'% -MySQL
+  writer like '%'||'날씨'||'%'; - Oracle
+  
+  seqno 값이 1,2,3,4,5,6,7,8,9,10 일 때 1,2,3,4,5 출력
+  seqno like 0,5  -MySQL
+  writer between 1 and 5 -Oracle
+
+  * JPA를 사용하게 되면 DBMS 간 SQL 차이점 극복 가능
+
+  * <![CDATA[]]> :  XML에서 < > 와 같은 태그 기호를 문자 그대로 인식할 수 있도록 해주는 블록
+
+--------------
+
+세션(Session) 과 쿠키(Cookie)
+
+세션(Session) : 서버에서 연결 정보를 관리 (ex : HttpSession..) 
+  - 서버 부하 / 보안 유리
+
+쿠키(Cookie) : 웹 브라우저에서 연결 정보를 관리
+  - 서버 부하x / 보안 x
+
+*세션 기반 인증과 토큰 기반 인증
+ - 세션은 서버에 인증 정보를 저장하고 관리
+ - 토큰은 클라이언트가 인증 정보를 저장하고 관리
+
+ - 요즘 서비스에서는 상태 유지와 확장성이 중요하므로 토큰 기반 인증을 많이 사용한다.
+
+자동 로그인 : 쿠키 이용
+
+--------------
+
+직렬화(Serialization)
+
+--------------
+
+Java 및 Spring 관련 예상 질문
+
+1. 스프링 빈
+2. 의존성 주입
+3. Dispatcher Servlet 작동 절차
+4. Model / ModelAndView
+5. session 과 cookie
+6. AJAX
+7. REST / RESTful / REST API
+8. MVC란? MVC model 1, MVC model 2
+9. Design Pattern
+10. 영속성 관리
+  - SQL Mapper : MyBatis
+  - ORM - Spring JPA, Prisma
+
+스프링 코딩 시 알아야 할 내용
+
+- 스프링 빈/ MyBatis 설정 및 XML 위치
+- session 생성 및 삭제(로그아웃) 하는 법
+- cookie 생성/삭제
+- fetch 함수 사용법
+- JSON.stringfy(), JSON.parse() 사용법
+- Upload, Download 방법
+- 이미지 미리보기 방법
+- pagination 
+
+--------------
+
+WAR 파일로 배포하기
+
+빌드 한 뒤
+
+파일 이름을 ROOT로 변경
+--------------
+
+React
+
+- 설치 방법
+   0. node.js 설치 -> $node -v 으로 버전 확인
+   1. $npm install -g yarn -> $yarn -v 으로 버전 확인
+   2. 원하는 폴더에 yarn create react-app 프로젝트명 으로 프로젝트 생성
+   3. 프로젝트로 폴더로 이동 후 $yarn start -> 서버 자동 실행(포트 3000)
+
+--------------
+
+CLI 명령 옵션
+
+ - long version (ex : yarn --version)
+ - short version (ex : yarn -v)
+
+ 1. React Project 생성
+  $yarn create react-app hello-react
+
+  create react-app(CRA)
+  
+  * monolith
+  
+  * SPA(Single Page Application)
+     - 기본 index.html에 자바스크립트 모듈을 생성하여 실행하는 방식
+     - 렌더링을 최소화하여 화면 전환이 빠르다
+      ex ) React, Vue, Angular, Svelt, NaxaCraw...
+
+  * React.native - 리액트 문법으로 웹앱 개발

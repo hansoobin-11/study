@@ -1,0 +1,58 @@
+- 세션(Session)과 쿠키(Cookie)
+- MySQL과 Oracle 문법 차이
+  - NUMBER를 INT 로
+  - 시퀀스 생성 대신 INT 타입 컬럼에 AUTO_INCREMENT 키워드 설정
+- DTO VO 차이
+-------------------
+
+Spring Legacy Project
+
+MVC 구조로 폴더 및 파일 생성(권장 구조)
+0. pom.xml 에 외부 라이브러리 의존성 추가
+  - mvnrepository.com에서 필요한 라이브러리 검색
+
+1. 패키지 구성
+  - com.board.controller --- Controller
+  - com.board.dao --- Model
+  - com.board.dto
+  - com.board.service --- Business Logic을 만들어서 프로세스를 구현하고, 필요한 데이터를 Model 객체와의 연동을 통해 가져온다
+
+2. 스프링 빈(Spring Bean) 생성을 위한 설정
+  - src/main/webapp/WEB-INF/spring/appServlet 디렉토리 생성
+  - appSevlet 폴더 안에 servlet-context.xml 파일 생성
+  - spring 폴더 안에 root-context.xml, spring-security.xml 파일 생성
+
+  * Spring Bean : ApplicationContext 객체가 생성해서 Spring IOC Container라는 스프링 메모리 공간에 저장하는 Singleton 패턴의 객체
+    - IOC : Inversion Of Control(제어의 역전)
+    - ApplicationContext 클래스 : BeanFactory라는 Factory 패턴 인터페이스의 구현체로, 스프링 빈 객체들의 최상위 클래스
+    - 생성 방법
+      1. XML 이용
+      2. 자바 Configuration 객체 생성
+      3. @Component Annotation 이용 
+      
+      * 레거시 프로젝트 수업에서는 bean을 root-context.xml(설정 파일)에 등록해서 사용(1번 방식)
+
+      
+  * WAR(Web ARchive) : 웹에서 배포하기 위한 자바 구조
+  * pom.xml에 추가하는 의존성 라이브러리 : Maven Repository
+
+3. MyBatis 설정
+   * classpath : src/main/resources
+   설정 XML 파일 위치 : src/main/resources/mybatis-config.xml
+   Mapper XML 파일 위치 : src/main/resources/mapper/xxxMaper.xml
+   * classpath : mapper/**/*/*Mapper.xml (Ant 표기법)
+   * mapper에서 parameterType을 반드시 매칭시켜야한다
+
+-------------------
+
+HikariCP : JDBC 커넥션 풀(Connection Pool) 라이브러리
+
+-------------------
+
+* MySQL에서는 sequence 생성 대신 seqno int not null AUTO_INCREMENT 와 같이 생성한다
+ 
+-------------------
+
+JSTL(JSP Standard Tag Library) - 교재 275/338
+ - 여러 프로그램에서 공통으로 사용하는 코드를 모아 표준화하여 정리한 라이브러리
+   (ex : c, fn, fmt, sql, x ...)

@@ -1,0 +1,100 @@
+SQL
+
+- DDL(Data Definition Language) : 데이터 정의어 - DB마다 약간씩 다르다
+  - CREATE(테이블 생성)
+   - cf. MySQL : CREATE TABLE [IF NOT EXIST] 테이블명...
+  
+  - ALTER(테이블 수정)
+   - ADD(컬럼 추가)
+   - DROP(컬럼 삭제)
+   - MODIFY(컬럼 속성 변경)
+   - RENAME(컬럼 이름 변경)
+   - ADD/DROP CONSTRAINT(제한 조건 변경)
+ 
+  - DROP(테이블 삭제)
+ 
+- DML(Data Manipulate Language) : 데이터 조작어
+  - INSERT(추가), UPDATE(수정), DELETE(삭제), SELECT(조회)
+ 
+- DCL(Data Control Language) : 데이터 제어어
+  - GRANT(권한 부여), REVOKE(권한 회수)
+
+--------------------------------------------
+
+VIEW - 데이터 공간을 차지하지 않는 조회용 테이블
+
+
+PL/SQL(Procedural Language/Structuted Query Language)
+ - 오라클 DBMS에서 사용하는 절차형 언어
+ - DBMS로 오라클을 사용하는 레거시(Legacy) 시스템의 경우 대부분 PL/SQL로 작성된 프로그램을 사용
+ - 최근 프로그래밍 패러다임은 프로그램 내에 비즈니스 로직을 두는 것이 일반화되었기 때문에 PL/SQL은 사용을 잘 안한다
+
+cf. 오라클 외에 다른 DBMS에도 이러한 절차형 프로그램이 있음
+ - MySQL/MariaDB : Stored Procedure
+ - MS SQL Server : T-SQL(Transaction SQL)
+ - PostgreSQL : PL/pgSQL
+
+ORM(Object Relation Mapping)
+ - 객체 지향 언어에서의 클래스와 DB의 테이블을 1:1로 매핑
+ - SQL은 최소로 사용하고 객체 지향 언어의 메소드로 대체
+ - JPA, Prisma, Python, Django/Fast API
+
+--------------------------------------------
+
+Packet(패킷)
+ - 네트워크를 통해 전송하기 쉽도록 작게 나눈 데이터의 전송 단위
+
+packet - 제어 정보(헤더 + 트레일) + 데이터(사용자 정보 : payload)
+IP 패킷 - 표준 인터넷 프로토콜(IP)에 의해 전송되는 데이터 묶음 (헤더 섹션 + 데이터 섹션) 
+
+패킷 교환 방식
+ - 데이터그램(Datagram) 교환 방식
+ - 가상회선(Virtual Circuit) 교환 방식
+
+패킷 전송 방식
+
+ - 유니캐스트(Unicast)
+ - 멀티캐스트(Multicast)
+ - 브로드캐스트(Broadcast)
+
+* 이더넷(Ethernet) : 유선 LAN 환경에서 데이터를 전송하는 기술 규격
+  - IEEE 802.3 : 국제 표준
+
+OSI 7 Layer Model : 네트워크에서 통신이 일어나는 과정을 7단계로 나눈 ISO 표준 네트워크 모델
+
+TCP/IP Protocol : 인터넷에 연결된 서로 다른 기종의 컴퓨터들이 데이터를 주고 받을 수 있도록 하는 표준 프로토콜
+  - IP(Internet Protocol) : 패킷 통신 방식의 프로토콜 (패킷 순서 정해져있지 않음)
+  - TCP(Transmission Control Protocol) : IP 위에서 동작하는 전송 조절 프로토콜 (패킷 순서대로 받게 함)
+
+| OSI 7 Layer Model          | TCP/IP Protocol                           |
+|:--------------------------:|:-----------------------------------------:|
+| Application : 7계층 - 응용 계층  | Application                               |
+| Presentation : 6계층 - 표현 계층 | (Telnet/FTP/DHCP/TFTP/HTTP/SMTP/DNS/SNMP) |
+| Session : 5계층 - 세션 계층      |                                           |
+| Transport : 4계층 - 전송 계층    | Transport(TCP/UDP)                        |
+| Network : 3계층 - 네트워크 계층    | Internet(ICMP/ARP/RARP/IP)                |
+| DataLink : 2계층 - 데이터 링크 계층       | Network Interface                         |
+| Physical : 1계층 - 물리 계층           |                                           |
+
+
+
+
+Application Layer의 주요 프로토콜
+
+- FTP(20) : FTP 연결 시 실제로 데이터를 전송하는데 사용되는 프로토콜
+- FTP(21) : FTP 연결 시 인정과 제어를 담당하는 프로토콜(Control)
+- Telnet(23) : 원격지 서버로의 접속 및 프로그램 실행에 사용되는 프로토콜
+- SMTP(25) : 메일 송수신 시 사용하는 프로토콜
+- DNS(53) : URL의 도메인명을 해석하는 데 사용되는 프로토콜
+- TFTP(69) : 인증이 존재하지 않는 단순한 파일 전송에 사용되는 프로토콜
+- HTTP(80) : 웹서비스 제공용 프로토콜
+ * HTTPS : HTTPS는 443포트를 사용하며, 데이터를 암호화 하여 전송하는 보안 프로토콜
+- POP3(110) : 메일 서버로 전송된 메일을 메일 클라이언트 프로그램으로 가져와서 읽을 때 사용되는 프로토콜
+- RPC(111) : 원격에서 서버의 프로세스를 실행할 수 있도록 하는 프로토콜
+- NetBios(138) : 윈도우에서 파일 공유에 사용하는 프로토콜
+- IMAP(143) : 메일 서버로 직접 접속해서 메일을 관리할 수 있도록 해주는 프로토콜
+- SNMP(161) : 네트워크 관리와 모니터링에 사용되는 프로토콜
+
+--------------------------------------------
+
+loopback 주소 - 프로그램 테스트 시 유용 

@@ -1,0 +1,128 @@
+DBMS(Database Management System) : 데이터베이스를 관리할 목적으로 만들어진 소프트웨어
+ - DBMS 등장 전 가지고 있던 문제점들
+   - Data Dependence : 데이터 의존성
+   - Data Integrity : 데이터 무결성
+   - Data Redundancy : 데이터 중복성
+   - Data Inconsistency : 데이터 불일치
+   - Data Standardization : 데이터 표준화
+
+ - RDBMS(Relational Database) : 관계형 데이터베이스
+   - ACID
+    - 원자성, 일관성, 독립성, 지속성
+
+ - 비관계형 데이터베이스 : 비정형화된 데이터들을 쉽게 처리하기 위한 데이터베이스
+   - NoSQL : 데이터 처리를 위한 자체 API 보유 
+
+ - 종류
+  - SQL
+  - DB 설계(ERD)
+  - DB 튜닝 - 기존에 만들어진 DB 설계 + DB 구성 + SQL 최적화
+  - DB Admin - DBA
+
+데이터 처리 방식
+- Batch
+- Online
+ - ETL
+
+Tableanu
+- Poc(Peoof of Conept)
+- MVP(Minimun Viable Product)
+
+데이터 마이닝(Data Mining)
+
+-------------------------------------
+
+Oracle 21c XE
+ - 오라클 설치 시 주의 사항
+ 1. 오라클 설치 경로에 한글 디렉토리가 있으면 안됨
+ 2. 계정 그룹에 Administrator 권한이 있어야함
+
+ - CDB(Container DB) : 컨테이너를 저장하는 창고의 역할(Multi-Tenant)
+ - PDB(Pluggable DB) : 일반적인 DB
+
+오라클 PDB 생성 방법
+
+0. c:\oracle\data 폴더 생성 -- 오라클 테이블 스페이스 생성
+1. create pluggable database springpdb admin user springadmin identified by 12345 roles=(dba) file_name_convert=('pdbseed','springpdb');
+2. alter pluggable database springpdb open read write; --선언
+3. alter pluggable database springpdb save state; --정의/실행/완료
+4. alter session set container = "springpdb"; --생성한 pdb를 cdb에 인식
+5. grant resource, dba to springadmin;
+
+-> springadmin이 테이블 스페이스 생성
+
+6. conn springadmin/12345@localhost/springpdb as sysdba;
+7. create tablespace springtbls datafile 'c:\oracle\data\springtbls.dbf' size 64M autoextend on;
+
+-> PDB 사용자 계정 생성 및 권한 부여
+
+8. create user springdev identified by 12345 default tablespace springtbls;
+9. alter user springdev quota unlimited on springtbls;
+10. grant connect, resource, dba to springdev;
+11. alter session set "_ORACLE_SCRIPT" = true;
+12. alter profile default limit PASSWORD_LIFE_TIME UNLIMITED;
+
+요구사항 정의서
+- 클래스 다이어그램
+- 시퀀스 다이어그램
+- ERD
+
+1) 논리 DB 설계
+
+ex) 
+
+사용자 정보
+
+------
+
+아이디
+이름
+나이
+성별
+
+2) 물리 DB 설계
+
+ex) 
+
+tbl_member
+
+-----
+
+userId varchar2(200)
+userName varchar2(50)
+...
+
+
+* 관계형 데이터 모델
+
+- 릴레이션 relation
+  - 데이터의 기본 관리 단위(table)
+
+- 속성 attribute
+  - 릴레이션의 '열'
+
+- 튜플 tuple
+
+- 도메인 domain
+
+SQL
+
+-DDL : 데이터 정의어(create, alter, drop)
+-DML : 데이터 조작어(insert, update, delete, select)
+-DCL : 데이터 제어어 (grant, revoke)
+
+기본키(primary key) : 행 구분 시 기준이 되는 컬럼
+
+참조키(foreign key) : 다른 테이블에서 참조하는 키
+
+NULL 값 대체
+ - DECODE, IFNULL, NVL
+
+제한조건(Constraint) - 무결성을 지키기 위한 조치 방법
+ - RESTRICT
+ - CASCADE
+ - NULLIFY(SET NULL)
+ - NO ACTION
+
+* nvarchar2 : 언어 상관 없이 글자 수(varchar2는 byte 기준)
+

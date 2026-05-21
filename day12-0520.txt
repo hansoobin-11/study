@@ -1,0 +1,165 @@
+Hooks
+:  React에서 상태(State)를 관리하는 함수
+
+* cra 명령어 복습
+ - $yarn create react-app 프로젝트이름
+
+* React 렌더링 방식
+  1. 서버에 보낸 최초 요청에 따라 클라이언트에게 자바스크립트 파일과 HTML을 보냄
+  2. 클라이언트 웹 브라우저에서 서버로부터 받은 자바스크립트 파일을 실행
+  3. HTML 및 DOM과 Virtual DOM을 생성
+  4. DOM에서 Reconsilidatation(대조 및 변경사항 적용)을 실행 후 Hydration(HTML과 자바스크립트(및 이벤트 리스너)의 결합)
+     * 컴포넌트가 처음 생성되어 실제 브라우저 DOM에 추가되고 화면에 처음 나타나는 과정 : 마운트(Mount)
+  5. 변경된 HTML을 웹 브라우저에 렌더링
+
+- 종류 및 사용법
+ - React 기본 라이브러리
+   - useState
+   - useEffect : 어떤 컴포넌트가 마운트(화면에 첫 렌더링), 업데이트(다시 렌더링), 언마운트(화면에서 사라짐) 할 때, 
+	       useEffect 내에 있는 특정한 코드(명령문)를 처리해주는 함수
+
+      1. 의존성 배열이 없는 경우 : 마운트 되거나 컴포넌트 내의 상태가 바뀌면 useEffect 내의 코드가 실행됨
+        
+      * useEffect 코드가 2번 실행되는 이유 : React 18 부터는 개발 모드에서 Strict Mode가 적용되면 안정성 테스트를 위해 React가 의도적으로 다시 마운트->언마운트->마운트를 실행(2번 실행)
+   
+      2-1. 의존성 배열이 있지만 값이 없는 경우 : 마운트 될 때만 useEffect 내 코드가 실행
+
+      2-2. 의존성 배열이 있고 값이 있는 경우 : 의존성 배열에 입력된 상태 객체의 값이 바뀔 때(초기화로 값이 변경되는 경우도 포함)만 useEffect 내 코드가 실행
+      
+      * cleanup : 언마운트 시 실행되는 명령을 return (하지 않으면 컴포넌트가 사라져도 이벤트 계속 실행 -> 메모리 누수 위험)
+ 	
+   - useRef : Ref Object를 반환하는 Hook 함수 (반환된 Ref Object는 컴포넌트 전 생애 기간동안 값이 유지)
+      1. DOM 접근
+      * React 에서는 id 등을 사용해서 DOM으로 직접 접근하는 것을 권장하지 않고, useRef 함수를 제공하여 DOM 요소에 접근할 수 있도록 한다
+     
+      2. 렌더링에 상관없이 값 유지
+      * useRef로 생성된 객체는 값이 바뀌더라도 렌더링하지 않고, 컴포넌트 내의 다른 상태 객체에 변화가 생겨 렌더링이 발생했을 때 바뀐 값을 렌더링한다.
+
+    - useContext : 컴포넌트가 부모->자식->손자 형태로 되어있을 때 계층을 넘어 값을 전달할 때 사용(전역 관리와는 다름)
+        - 사용 방법 : 
+	 1. 저장소 (store 폴더 및 모듈) 생성 
+	    - 모듈 양식
+		``` 
+		export const ?Context = createContext("키 값"); (? 는 Context 이름)
+		```
+	 2. 불러 올 컴포넌트 내에 useContext를 사용하여 저장소에 있는 값을 가져옴
+                - 사용 양식
+		```
+		const ? = useContext(사용할 context)
+		```
+	 3. 최상위 부모 컴포넌트 내에서 Provider를 사용하여 저장소를 사용할 수 있는 영역 설정(중첩 라우팅 구조랑 비슷)
+	    - Provider 호출 방법
+		```
+		<저장소 이름.Provider>
+			<컴포넌트/>
+		</저장소 이름.Provider>
+		```
+ 
+  - React.memo + useCallback : 부모에서 자식으로 props를 전달할 때 렌더링을 최소화 하기 위한 최적화 기법 (useMemo와 완전히 다름!)
+   	1. 의존성 배열이 비어있는 경우 : 최초 렌더링 시에만 함수 생성 후 재사용
+		* 부모가 재렌더링 되어도 handleClick 함수가 변하지 않으므로 Child로 전달되는 onClick의 props가 변하지 않음
+		   -> React.memo가 props 변경 없다고 판단 -> Child 리렌더링 안함
+	2. 의존성 배열에 값이 있는 경우 : 값이 바뀔 때마다 새 함수 생성
+		* Child로 전달되는 onClick(props)가 변경됨
+		   -> React.memo가 props 변경 감지 -> Child 리렌더링 실행
+- 외부 라이브러리
+     - zustand : 전역 상태 관리를 위한 외부 라이브러리
+	- 설치 방법
+	```cmd
+		$yarn add zustand
+	```
+	- 사용 방법 : store 라는 저장소 폴더에 state-action 형태의 함수를 만듦
+	```javascript
+		import {create} from "zustand";
+
+		const useCountStore = create((set) => ({
+    			count : 10, //객체(state) 값
+    
+    			//action(객체 내 메소드)
+   			increase : () => set(state => ({count : state.count + 1})),
+    			decrease : () => set(state => ({count : state.count - 1}))
+
+		}));
+
+		export default useCountStore;
+	```
+------------------------
+
+React에서의 Routing
+
+ - Router, Route
+   - Router : 경로 이동 관리
+   - Route : 경로 정보
+
+   * <Link></Link> 와 a 태그의 차이
+	- <Link> : SPA의 동일 페이지에서 다른 컴포넌트를 호출 (필요한 컴포넌트만 교체)
+	- <a> :  서버 재요청 및 외부 사이트로 이동
+
+------------------------
+
+React의 목적 
+  : 상태(State) 관리를 통해 SPA(Single Page Application)을 구현하는 것
+
+* 리액트 내에서 연산이 끝나고 상태 변화에 관계 없이 보관이 필요한 데이터는 가급적 Ref 객체에 저장하는 것이 안전하고 시스템 자원 관리에도 용이
+
+------------------------
+
+자바스크립트 계열(React, Vue, Node,js 등)에서서의 전역 데이터 관리 도구 
+  ex) redux, redus tookit, zustand, pinia
+  -> 실무에서는 REST API를 호출해서 값을 저장하거나 저장된 값을 불러와서 사용
+
+------------------------
+
+Next.js (교재 45/54)
+ : React 기반의 풀스택 웹 프레임워크
+ 
+ - 특징
+  - SSR , SSG
+  - 파일 기반 라우팅
+  - 풀스택 기능
+  - 자동 최적화(SEO)
+
+ - 관련 용어 
+   - webpack : 자바스크립트 모듈 번들러로 프로그램 성능 최적화에 용이
+      * 모듈 번들러 : 여러 개의 모듈을 하나로 조합하여 파일로 병합해주는 도구
+
+   - CSR(Client Side Rendering) : 클라이언트 측에서 렌더링
+     - 장점 : 서버 부하를 줄이고 클라이언트쪽에서 바로 실행, 렌더링 최소화 하므로 화면 전환 속도 빠름
+     - 단점 : 초기 화면 로딩 시 오래 걸림 / 검색 엔진이 웹사이트 검색하기 어려움
+
+   - SSR(Server Side Rendering) : 서버에서 렌더링 준비를 마친 후 클라이언트에 전달 / 검색 엔진에 노출이 필요한 부분은 서버에서 HTML로 가공 후 클라이언트로 전송
+   
+   - SSG(Static Site Generation) : build 타임 때 미리 React 컴포넌트를 HTML 파일로 렌더링 해놓는 것
+
+   * 사이트에 맞는 렌더링 구현 전략을 세워서 SEO(Search Engine Optimization : 검색 엔진 최적화)에 적합하도록 구성하는 것이 중요하다
+   
+   * 최근 경향 : AI로 인해 검색 빈도가 줄어들어 AI LLM에 노출되는 GEO에 집중하고 있음
+       * GEO(Generative SEO : 생성형 SEO)
+
+   - 설치 방법 : $npm install -g create-next-app
+   - 프로젝트 생성 : $npx create-next-app 프로젝트명
+
+   * Prisma
+       : SQL 쿼리 대신 자바스크립트/타입스크립트 객체를 통해 DB 조작이 가능한 ORM
+    
+   - 설치 방법 : npm install -D prisma@6(최신 버전은 충돌 가능성이 있으므로 버전 6으로 설치)
+   - 프리즈마 초기화 : npx prisma init --datasource-provider mysql -> npx prisma generate
+   - 환경 변수에 DB연결 정보 설정 및 prisma.schema.prisma에 db 정보 및 클라이언트 정보 설정
+   - 프리즈마 문법으로 model 생성
+   - 마이그레이션 방법(실제 db 반영) : npx prisma db push
+   - 스키마 반영 및 클라이언트 생성 : npx prisma generate
+
+   * db 조회도 sql문 대신 프리즈마 api를 통해 접근
+
+ - Next.js 구조
+ ex)
+   app(ROOT)
+    |
+    ...
+    |
+    L layout.tsx ( 화면 구조 - 레이아웃)
+    L page.tsx (루트 페이지( / ) - 첫 화면)
+
+------------------------
+
+Server / Client Component 구분

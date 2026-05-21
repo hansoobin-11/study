@@ -1,0 +1,58 @@
+React의 특성
+
+1. JSX(JavaScript XML) 문법 사용
+   - 자바스크립트 ES6 문법을 기반으로 확장된 스크립트 언어인 JSX를 학습하기 위해 ES6 문법 공부 필수
+   - Node.js의 V8 엔진과 NPM(Node Package Manager)를 이용하는 관계로 Node.js에 대한 기초 지식 필수
+   
+   * V8 엔진 : 크롬 웹 브라우저 내에 설치되어있는 자바 스크립트 번역기(interpreter)를 통해 
+     웹 브라우저 외부에서 자바 스크립트를 일반 프로그램 언어로 사용가능하도록 해주는 도구
+
+2. 컴포넌트 간 데이터 전달은 단방향 데이터 바인딩(One-way Data Binding)을 사용
+   - 최근에는 zustand, redux 등의 전역 데이터 관리 라이브러리를 활용하여 전역 데이터 관리
+
+3. 가상 돔(Virtual DOM)
+ - DOM에서 리플로우와 리페인트가 자주 수행되는 문제를 해결하기 위해 사용
+ - DOM Tree와 동일한 구조인 가상 메모리를 만들고 DOM 조작 발생 시 가상 DOM에서 모든 연산 수행 후 실제 DOM을 갱신
+ -> Reconsilidataion(Diffing(두 개의 DOM을 대조/비교) + Batch Update(변경된 부분만 실제 DOM에 일괄 적용))
+
+4. 프로젝트 관리를 위해 npm을 사용(이번 과정에서는 npm 대신 yarn 사용) 
+
+---------------------
+
+* 관련 용어
+
+클로저(Closure)
+
+NPM
+   : Node Package Manager
+
+DOM(Document Object Model)
+   : HTML 과 JS를 연결시켜주는 객체
+     ex) document.querySelector(#userid)...
+
+랜더링(Rendering)
+   - 리플로우(Reflow) : DOM 조작으로 레이아웃 과정이 다시 진행되는 것
+   - 리페인트(Repaint) : DOM 조작으로 페인팅 과정이 다시 진행되는 것
+ 
+스레드(Thread)
+  : 프로세스(Process)를 세분화한 작업의 단위
+ * 이벤트 기반 싱글 스레드는 논블로킹 I/O 모델
+
+스트릭트 모드(StrictMode)
+---------------------
+ 
+자바 스크립트에서 모듈을 다루는 방식
+
+1. CommonJS : 예전 방식 (require / modules.export ...)
+
+2. ES module : 자바 스크립트의 공식 표준 모듈 시스템 (import / export default ...)
+
+---------------------
+
+리액트 주요 문법
+
+1. JSX : ES6 문법에 기반하여 확장된 리액트 문법
+2. Component : 리액트를 구성하는 프로그램의 기본단위로 JSX 문법에 기반한 함수 또는 클래스 모듈
+3. Props
+  - 부모 Component에서 자식 Component로 전달되는 값
+  - 부모에서 자식으로만 값 전달 가능 -> 단방향 데이터 바인딩(One-way Data Binding)
